@@ -1,4 +1,4 @@
-# librcon
+# libRCON
 
 ## What is the RCON protocol
 

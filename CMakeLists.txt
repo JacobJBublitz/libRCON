@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-PROJECT(librcon C)
+PROJECT(libRCON C)
 
-ADD_LIBRARY(librcon STATIC rcon.c rcon/rcon.h)
-TARGET_INCLUDE_DIRECTORIES(librcon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ADD_LIBRARY(libRCON STATIC rcon.c rcon/rcon.h)
+TARGET_INCLUDE_DIRECTORIES(libRCON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-ADD_EXECUTABLE(rcon_example_client examples/rcon_client.c)
-TARGET_LINK_LIBRARIES(rcon_example_client PUBLIC librcon)
+ADD_EXECUTABLE(RCON_example_client examples/rcon_client.c)
+TARGET_LINK_LIBRARIES(RCON_example_client PUBLIC libRCON)
