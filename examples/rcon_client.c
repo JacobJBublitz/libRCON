@@ -13,6 +13,9 @@ static void _print_error(RCONerror error) {
 	case RCON_ERROR_AUTHENTICATION_FAILURE:
 		fprintf(stderr, "[RCON]: Failed to authenticate with the server.\n");
 		break;
+	case RCON_ERROR_CONNECTION_FAILURE:
+		fprintf(stderr, "[RCON]: Failed to connect to server.\n");
+		break;
 	case RCON_ERROR_OUT_OF_MEMORY:
 		fprintf(stderr, "[RCON]: Ran out of memory.\n");
 		break;
@@ -22,11 +25,15 @@ static void _print_error(RCONerror error) {
 	case RCON_ERROR_UNRESOLVED_HOSTNAME:
 		fprintf(stderr, "[RCON]: Failed to resove hostname.\n");
 		break;
+	default:
+		fprintf(stderr, "[RCON]: An unknown error occured.\n");
+		break;
 	}
+	getc(stdin);
 }
 
 static void _usage(void) {
-	fputs("Usage: rcon_example_client <HOSTNAME> <PORT> <PASSWORD>", stdout);
+	printf("Usage: rcon_example_client <HOSTNAME> <PORT> <PASSWORD>\n");
 	exit(0);
 }
 
@@ -34,17 +41,18 @@ int main(int argc, const char **argv) {
 	RCONclient *client;
 	char input[512];
 	char *response;
-	RCONbool result;
 
 	if (argc != 4) {
 		_usage();
 	}
 
+	printf("[RCON]: Initializing RCON.\n");
 	if (!rconInitialize()) {
 		_print_error(rconGetLastError());
 		return -1;
 	}
 
+	printf("[RCON]: Connecting to server.\n");
 	client = rconClientConnect(argv[1], argv[2]);
 	if (!client) {
 		_print_error(rconGetLastError());
@@ -53,8 +61,8 @@ int main(int argc, const char **argv) {
 	}
 	printf("[RCON]: Connected to '%s:%s'.\n", argv[1], argv[2]);
 
-	result = rconClientAuthenticate(client, argv[3]);
-	if (!result) {
+	printf("[RCON]: Authenticating with server.\n");
+	if (!rconClientAuthenticate(client, argv[3])) {
 		_print_error(rconGetLastError());
 		rconClientDisconnect(client);
 		rconTerminate();
@@ -65,7 +73,7 @@ int main(int argc, const char **argv) {
 	printf("[RCON]: Type a command or '!quit' to exit.\n");
 	do {
 		memset(input, 0, 512);
-		gets_s(input, 512);
+		gets(input);
 
 		if (strcmp("!quit", input) == 0) {
 			break;

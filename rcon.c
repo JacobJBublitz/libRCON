@@ -9,10 +9,10 @@
 #   define WIN32_LEAN_AND_MEAN
 #   include <Windows.h>
 #   include <winsock2.h>
-#	include <WS2tcpip.h>
+#   include <WS2tcpip.h>
 
 #   define htole32(x) (x)
-#	define le32toh(x) (x)
+#   define le32toh(x) (x)
 
 typedef DWORD tls_index_t;
 
@@ -23,11 +23,19 @@ typedef DWORD tls_index_t;
 #   include <arpa/inet.h>
 #   include <endian.h>
 #   include <netdb.h>
+#   include <pthread.h>
 #   include <sys/socket.h>
 #   include <unistd.h>
 
 typedef int SOCKET;
-#	define INVALID_SOCKET (-1)
+#   define SOCKET_ERROR (-1)
+#   define INVALID_SOCKET (-1)
+
+typedef pthread_key_t tls_index_t;
+
+#   define _tlsGetValue(index) pthread_getspecific(index)
+#   define _tlsSetValue(index, value) pthread_setspecific(index, value)
+
 #endif
 
 #define SERVERDATA_RESPONSE_VALUE (0)
@@ -107,7 +115,7 @@ static struct addrinfo *_resolveHostname(const char *hostname, const char *port)
 
 static RCONbool _sendPacket(RCONclient *client, int type, const char *body) {
 	int packetLength = 10 + (int) strlen(body);
-	unsigned char *packet = malloc(packetLength + 4);
+	char *packet = (char *) malloc(packetLength + 4);
 	if (!packet) {
 		_setLastError(RCON_ERROR_OUT_OF_MEMORY);
 		return RCON_FALSE;
@@ -208,7 +216,11 @@ RCONclient *rconClientConnect(const char *serverName, const char *port) {
 
 		status = connect(client->sock, ptr->ai_addr, (int) ptr->ai_addrlen);
 		if (status == SOCKET_ERROR) {
+#ifdef _WIN32
 			closesocket(client->sock);
+#else
+			close(client->sock);
+#endif
 			client->sock = INVALID_SOCKET;
 			continue;
 		}
@@ -256,7 +268,7 @@ RCONbool rconInitialize(void) {
 	WSAStartup(MAKEWORD(1, 1), &wsaData);
 	_lastErrorTLSIndex = TlsAlloc();
 #else
-
+	pthread_key_create(&_lastErrorTLSIndex, NULL);
 #endif
 	rconInitializeThread();
 
