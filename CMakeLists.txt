@@ -1,15 +1,15 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+cmake_minimum_required(VERSION 3.0)
 
-PROJECT(libRCON C)
+project(libRCON C)
 
-ADD_LIBRARY(libRCON STATIC rcon.c rcon/rcon.h)
-TARGET_INCLUDE_DIRECTORIES(libRCON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-SET_TARGET_PROPERTIES(libRCON PROPERTIES C_STANDARD 90)
-IF (UNIX OR APPLE)
-	TARGET_LINK_LIBRARIES(libRCON PUBLIC pthread)
-ENDIF (UNIX OR APPLE)
+add_library(libRCON STATIC rcon.c rcon/rcon.h)
+target_include_directories(libRCON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set_target_properties(libRCON PROPERTIES C_STANDARD 90)
+if (UNIX OR APPLE)
+	target_link_libraries(libRCON PUBLIC pthread)
+endif ()
 
 
-ADD_EXECUTABLE(RCON_example_client examples/rcon_client.c)
-TARGET_LINK_LIBRARIES(RCON_example_client PUBLIC libRCON)
-SET_TARGET_PROPERTIES(RCON_example_client PROPERTIES C_STANDARD 90)
+add_executable(RCON_example_client examples/rcon_client.c)
+target_link_libraries(RCON_example_client PUBLIC libRCON)
+set_target_properties(RCON_example_client PROPERTIES C_STANDARD 90)
