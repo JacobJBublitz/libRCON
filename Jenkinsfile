@@ -5,8 +5,9 @@ pipeline {
 		stage('Build') {
 			steps {
 				sh 'cmake .'
-				sh 'make'
+				sh 'make libRCON_static libRCON_shared'
 				archiveArtifacts artifacts: 'libRCON.a'
+				archiveArtifacts artifacts: 'libRCON.so'
 			}
 		}
 	}
