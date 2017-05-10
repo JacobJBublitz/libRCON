@@ -4,7 +4,7 @@ project(libRCON C)
 
 add_library(libRCON STATIC rcon.c rcon/rcon.h)
 target_include_directories(libRCON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-set_target_properties(libRCON PROPERTIES C_STANDARD 90)
+set_target_properties(libRCON PROPERTIES C_STANDARD 90 OUTPUT_NAME "RCON")
 if (UNIX OR APPLE)
 	target_link_libraries(libRCON PUBLIC pthread)
 endif ()
